@@ -21,6 +21,7 @@ Run with:
 import numpy as np
 import pandas as pd
 import streamlit as st
+import time
 
 # ─── Engine ──────────────────────────────────────────────────────────────────
 from engine.game_theory import (
@@ -600,7 +601,7 @@ st.markdown("---")
 # Tabs
 # ─────────────────────────────────────────────────────────────────────────────
 
-TAB_ICONS = ["🌐 Network", "🎯 Game Analysis", "🔄 Simulation", "🤖 AI Insights", "⚖️ Comparison", "💾 Export", "🎮 Play vs AI"]
+TAB_ICONS = ["🌐 Network", "🎯 Game Analysis", "🔄 Simulation", "🤖 AI Insights", "⚖️ Comparison", "💾 Export", "🎮 Play vs AI", "📡 Live Telemetry"]
 tabs = st.tabs(TAB_ICONS)
 
 
@@ -1150,6 +1151,88 @@ with tabs[6]:
             else:
                 st.markdown("---")
                 st.info("🧠 Inside the AI's Brain: Make at least 3 moves for the AI to start predicting your strategy!")
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# TAB 8 — LIVE TELEMETRY
+# ════════════════════════════════════════════════════════════════════════════
+
+with tabs[7]:
+    st.markdown("### 📡 Live Wargame Telemetry")
+    st.caption("Execute a simulation in real-time. Watch the cumulative payoffs stack and observe the rapid back-and-forth action.")
+
+    if q_agent is None:
+        st.info("▶ Run the full analysis in the sidebar first to initialize the AI.")
+    else:
+        if "live_wargame_running" not in st.session_state:
+            st.session_state.live_wargame_running = False
+
+        if not st.session_state.live_wargame_running:
+            if st.button("🚀 INITIATE LIVE WARGAME", use_container_width=True, type="primary"):
+                st.session_state.live_wargame_running = True
+                st.rerun()
+        else:
+            if st.button("🛑 ABORT SIMULATION", use_container_width=True):
+                st.session_state.live_wargame_running = False
+                st.rerun()
+
+            st.markdown("---")
+            # Setup Placeholders
+            c1, c2 = st.columns([2, 1])
+            with c1:
+                st.markdown("#### Live Cumulative Payoffs")
+                chart_placeholder = st.empty()
+            with c2:
+                st.markdown("#### Event Feed")
+                log_placeholder = st.empty()
+
+            progress_bar = st.progress(0)
+
+            # Initialize states for live execution
+            live_rounds = 50
+            def_score = 0
+            atk_score = 0
+            live_logs = []
+            live_scores = []
+            
+            temp_history = [] 
+
+            for r in range(1, live_rounds + 1):
+                if not st.session_state.live_wargame_running:
+                    break
+
+                j = np.random.randint(0, n_atk)
+                
+                state = temp_history[-1] if len(temp_history) > 0 else 0
+                ai_action = q_agent.select_action(state)
+                
+                def_payoff = float(A[ai_action, j])
+                atk_payoff = float(B[ai_action, j])
+                
+                def_score += def_payoff
+                atk_score += atk_payoff
+                
+                temp_history.append(j)
+                
+                live_scores.append({
+                    "Round": r,
+                    "Defender Score": def_score,
+                    "Attacker Score": atk_score
+                })
+                
+                live_logs.append(f"**R{r}:** Attacker deployed <span style='color:#FF003C;'>{atk_labels[j]}</span>...<br>AI blocked with <span style='color:#39FF14;'>{def_labels[ai_action]}</span>.")
+
+                chart_placeholder.line_chart(pd.DataFrame(live_scores).set_index("Round"))
+                
+                display_logs = "<br><br>".join(live_logs[-6:])
+                log_placeholder.markdown(f"<div style='font-family: JetBrains Mono; font-size: 0.85em; padding:10px; border:1px solid #00F3FF; background:rgba(0,0,0,0.5);'>{display_logs}</div>", unsafe_allow_html=True)
+                
+                progress_bar.progress(r / live_rounds)
+                time.sleep(0.15)
+                
+            st.session_state.live_wargame_running = False
+            if r == live_rounds:
+                st.success("Wargame Complete.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ Provides:
 import numpy as np
 import pandas as pd
 import io
+import json
 
 
 def simulation_to_csv(df: pd.DataFrame) -> bytes:
@@ -90,3 +91,29 @@ def config_to_csv(A: np.ndarray, B: np.ndarray, defender_labels: list, attacker_
     df_B = pd.DataFrame(B, index=defender_labels, columns=attacker_labels)
     df_B.to_csv(buf)
     return buf.getvalue().encode("utf-8")
+
+
+def export_scenario_json(A: np.ndarray, B: np.ndarray, def_labels: list, atk_labels: list) -> str:
+    """
+    Serialise a custom scenario into a formatted JSON string.
+    """
+    scenario = {
+        "defender_labels": def_labels,
+        "attacker_labels": atk_labels,
+        "A": A.tolist(),
+        "B": B.tolist()
+    }
+    return json.dumps(scenario, indent=2)
+
+
+def parse_scenario_json(json_bytes: bytes) -> dict:
+    """
+    Parse a JSON scenario back into NumPy matrices and string labels.
+    """
+    scenario = json.loads(json_bytes.decode("utf-8"))
+    return {
+        "defender_labels": scenario["defender_labels"],
+        "attacker_labels": scenario["attacker_labels"],
+        "A": np.array(scenario["A"]),
+        "B": np.array(scenario["B"])
+    }

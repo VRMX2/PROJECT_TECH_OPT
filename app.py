@@ -60,6 +60,8 @@ from utils.export import (
     pareto_to_csv,
     equilibria_to_csv,
     config_to_csv,
+    export_scenario_json,
+    parse_scenario_json,
 )
 
 
@@ -84,11 +86,27 @@ html, body, [class*="css"] {
     color: #e8eaf0;
 }
 
+/* Animations */
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 10px rgba(0,243,255,0.1); }
+    50% { box-shadow: 0 0 25px rgba(0,243,255,0.3); }
+    100% { box-shadow: 0 0 10px rgba(0,243,255,0.1); }
+}
+@keyframes blink {
+    0% { opacity: 1; text-shadow: 0 0 10px #39FF14; }
+    50% { opacity: 0.4; text-shadow: none; }
+    100% { opacity: 1; text-shadow: 0 0 10px #39FF14; }
+}
+
 /* Header banner */
 .app-header {
     background: rgba(16, 23, 42, 0.6);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(88, 101, 242, 0.2);
+    border: 1px solid rgba(88, 101, 242, 0.3);
     border-radius: 12px;
     padding: 24px 32px;
     margin-bottom: 24px;
@@ -103,32 +121,36 @@ html, body, [class*="css"] {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(ellipse at 20% 50%, rgba(0,243,255,0.08) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,243,255,0.15) 0%, transparent 60%);
     pointer-events: none;
 }
 .app-title {
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: linear-gradient(90deg, #00F3FF, #A78BFA, #FF003C);
+    letter-spacing: 0.08em;
+    background: linear-gradient(90deg, #00F3FF 0%, #A78BFA 50%, #00F3FF 100%);
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin: 0;
     line-height: 1.2;
+    animation: shimmer 4s linear infinite;
 }
 .app-subtitle {
-    font-size: 0.9rem;
-    color: #8892a4;
-    margin-top: 6px;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    margin-top: 8px;
     font-weight: 300;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    border-left: 2px solid #00F3FF;
+    padding-left: 10px;
 }
 
 /* Metric cards */
 .metric-card {
-    background: rgba(16, 23, 42, 0.4);
+    background: rgba(16, 23, 42, 0.5);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
@@ -136,44 +158,106 @@ html, body, [class*="css"] {
     text-align: center;
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+.metric-card::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #00F3FF, transparent);
+    opacity: 0.5;
 }
 .metric-card:hover { 
-    border-color: rgba(0, 243, 255, 0.4); 
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
-    transform: translateY(-2px);
+    border-color: rgba(0, 243, 255, 0.6); 
+    transform: translateY(-4px) scale(1.02);
+    animation: pulseGlow 2s infinite;
 }
-.metric-val { font-size: 1.8rem; font-weight: 700; color: #00F3FF; text-shadow: 0 0 10px rgba(0,243,255,0.3); }
-.metric-lbl { font-size: 0.75rem; color: #a5b4fc; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-val { 
+    font-size: 2rem; 
+    font-weight: 800; 
+    color: #00F3FF; 
+    text-shadow: 0 0 12px rgba(0,243,255,0.4); 
+    font-family: 'JetBrains Mono', monospace;
+}
+.metric-lbl { 
+    font-size: 0.75rem; 
+    color: #a5b4fc; 
+    margin-top: 6px; 
+    text-transform: uppercase; 
+    letter-spacing: 0.08em; 
+}
 
 /* Status chips */
 .chip {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
-.chip-pure   { background: rgba(57,255,20,0.15); color: #39FF14; border: 1px solid #39FF14; }
-.chip-mixed  { background: rgba(0,243,255,0.15); color: #00F3FF; border: 1px solid #00F3FF; }
-.chip-pareto { background: rgba(167,139,250,0.15);  color: #A78BFA; border: 1px solid #A78BFA; }
+.chip-pure   { background: rgba(57,255,20,0.1); color: #39FF14; border: 1px solid rgba(57,255,20,0.5); box-shadow: 0 0 8px rgba(57,255,20,0.2); }
+.chip-mixed  { background: rgba(0,243,255,0.1); color: #00F3FF; border: 1px solid rgba(0,243,255,0.5); box-shadow: 0 0 8px rgba(0,243,255,0.2); }
+.chip-pareto { background: rgba(167,139,250,0.1); color: #A78BFA; border: 1px solid rgba(167,139,250,0.5); box-shadow: 0 0 8px rgba(167,139,250,0.2); }
 
 /* Sidebar tweaks */
 section[data-testid="stSidebar"] {
-    background: rgba(10, 15, 26, 0.85);
+    background: rgba(10, 15, 26, 0.95);
     backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(88, 101, 242, 0.15);
+    border-right: 1px solid rgba(0, 243, 255, 0.2);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
 }
 
-/* Base elements */
+/* Base elements & Streamlit classes */
 code, .stCode { font-family: 'JetBrains Mono', monospace; }
-button[data-baseweb="tab"] { font-family: 'Inter', sans-serif !important; font-weight: 500 !important; }
-hr { border-color: rgba(255, 255, 255, 0.05); }
+button[data-baseweb="tab"] { font-family: 'Inter', sans-serif !important; font-weight: 600 !important; color: #94a3b8 !important; }
+button[aria-selected="true"] { color: #00F3FF !important; border-bottom-color: #00F3FF !important; text-shadow: 0 0 8px rgba(0,243,255,0.4); }
+hr { border-color: rgba(0, 243, 255, 0.15); }
+
+/* Tactical Streamlit Buttons */
+.stButton > button {
+    border: 1px solid rgba(0, 243, 255, 0.3) !important;
+    background-color: rgba(16, 23, 42, 0.8) !important;
+    color: #00F3FF !important;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+}
+.stButton > button:hover {
+    background-color: rgba(0, 243, 255, 0.1) !important;
+    border-color: #00F3FF !important;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4) !important;
+    transform: scale(1.02);
+}
+.stButton > button:active { transform: scale(0.98); }
+
+/* Primary buttons (Run analysis) */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(90deg, rgba(0,243,255,0.2), rgba(167,139,250,0.2)) !important;
+    border: 1px solid #00F3FF !important;
+    color: #FFF !important;
+    text-shadow: 0 0 5px #00F3FF;
+}
+
+/* Expanders */
+.streamlit-expanderHeader { 
+    background-color: rgba(16, 23, 42, 0.6) !important; 
+    border-left: 3px solid #A78BFA !important;
+    border-radius: 4px !important;
+}
 
 /* Override app background for real transparent look */
 .stApp {
-    background: radial-gradient(circle at 10% 20%, #080c1f 0%, #050814 100%) !important;
+    background: radial-gradient(circle at top right, #0a1128 0%, #050814 100%) !important;
+    background-attachment: fixed !important;
 }
+
+/* Utility classes applied via markdown */
+.live-status { animation: blink 2s infinite; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -217,6 +301,21 @@ def init_session():
     if "last_B" not in st.session_state:
         st.session_state.last_B = None
 
+    if "human_score" not in st.session_state:
+        st.session_state.human_score = 0.0
+
+    if "ai_score" not in st.session_state:
+        st.session_state.ai_score = 0.0
+
+    if "human_history" not in st.session_state:
+        st.session_state.human_history = []
+
+    if "ai_history" not in st.session_state:
+        st.session_state.ai_history = []
+
+    if "play_logs" not in st.session_state:
+        st.session_state.play_logs = []
+
 
 init_session()
 
@@ -243,20 +342,34 @@ with st.sidebar:
     st.markdown("## ⚙️ Game Configuration")
     st.markdown("---")
 
-    # ── Scenario preset ───────────────────────────────────────────────────
+    # ── Scenario preset & Import ──────────────────────────────────────────
     st.markdown("### 📋 Scenario Preset")
-    scenario_name = st.selectbox(
-        "Choose a scenario",
-        options=["Custom"] + list(SCENARIO_PRESETS.keys()),
-        key="scenario_select",
-    )
+    
+    uploaded_file = st.file_uploader("📥 Load Custom Scenario (JSON)", type=["json"])
+    imported_preset = None
+    if uploaded_file is not None:
+        try:
+            imported_preset = parse_scenario_json(uploaded_file.getvalue())
+            st.success("✅ Loaded from JSON!")
+        except Exception as e:
+            st.error("❌ Failed to parse JSON")
 
-    if scenario_name != "Custom":
-        preset = SCENARIO_PRESETS[scenario_name]
-        st.info(preset["description"])
+    if imported_preset is not None:
+        scenario_name = "Imported JSON"
         use_preset = True
+        preset = imported_preset
     else:
-        use_preset = False
+        scenario_name = st.selectbox(
+            "Choose a scenario template",
+            options=["Custom Builder"] + list(SCENARIO_PRESETS.keys()),
+            key="scenario_select",
+        )
+        if scenario_name != "Custom Builder":
+            preset = SCENARIO_PRESETS[scenario_name]
+            st.info(preset.get("description", ""))
+            use_preset = True
+        else:
+            use_preset = False
 
     st.markdown("---")
 
@@ -321,6 +434,19 @@ with st.sidebar:
 
     st.session_state.last_A = A
     st.session_state.last_B = B
+
+    st.markdown("---")
+
+    # ── Export Configuration ───────────────────────────────────────────────
+    st.markdown("### 💾 Export Configuration")
+    json_str = export_scenario_json(A, B, def_labels, atk_labels)
+    st.download_button(
+        label="📥 Download JSON Format",
+        data=json_str,
+        file_name="cybergame_scenario.json",
+        mime="application/json",
+        use_container_width=True
+    )
 
     st.markdown("---")
 
@@ -460,9 +586,10 @@ with k4:
 with k5:
     ai_status = "Active" if (q_agent is not None) else "Off"
     ai_color  = "#39FF14" if ai_status == "Active" else "#8892a4"
+    anim_cls  = "live-status" if ai_status == "Active" else ""
     st.markdown(f"""
     <div class="metric-card">
-        <div class="metric-val" style="color:{ai_color}">{ai_status}</div>
+        <div class="metric-val {anim_cls}" style="color:{ai_color}">{ai_status}</div>
         <div class="metric-lbl">AI Defender (Q-Learning)</div>
     </div>""", unsafe_allow_html=True)
 
@@ -473,7 +600,7 @@ st.markdown("---")
 # Tabs
 # ─────────────────────────────────────────────────────────────────────────────
 
-TAB_ICONS = ["🌐 Network", "🎯 Game Analysis", "🔄 Simulation", "🤖 AI Insights", "⚖️ Comparison", "💾 Export"]
+TAB_ICONS = ["🌐 Network", "🎯 Game Analysis", "🔄 Simulation", "🤖 AI Insights", "⚖️ Comparison", "💾 Export", "🎮 Play vs AI"]
 tabs = st.tabs(TAB_ICONS)
 
 
@@ -941,6 +1068,88 @@ with tabs[5]:
         "AI Defender": "Q-Learning (Active)" if q_agent else "Disabled",
     }
     st.json(summary_data)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# TAB 7 — PLAY VS AI
+# ════════════════════════════════════════════════════════════════════════════
+
+with tabs[6]:
+    st.markdown("### 🎮 Arena: Play vs AI")
+    st.caption("You are the Attacker. The Q-Learning AI is the Defender. Try to maximize your payoff by outsmarting the model!")
+
+    if q_agent is None:
+        st.info("▶ Run the full analysis in the sidebar first to initialize the AI.")
+    else:
+        col_arena, col_score = st.columns([2, 1])
+
+        with col_score:
+            st.markdown("#### Scoreboard")
+            s1, s2 = st.columns(2)
+            s1.metric("Your Score (Attacker)", f"{st.session_state.human_score:.2f}")
+            s2.metric("AI Score (Defender)", f"{st.session_state.ai_score:.2f}")
+
+            if st.button("🔄 Reset Match", use_container_width=True):
+                st.session_state.human_score = 0.0
+                st.session_state.ai_score = 0.0
+                st.session_state.human_history = []
+                st.session_state.ai_history = []
+                st.session_state.play_logs = []
+                st.rerun()
+
+        with col_arena:
+            st.markdown("#### Choose Your Attack Strategy")
+            attack_cols = st.columns(n_atk)
+            for j in range(n_atk):
+                with attack_cols[j]:
+                    if st.button(f"⚔️ {atk_labels[j]}", key=f"atk_btn_{j}", use_container_width=True):
+                        # 1. State is the human's last move
+                        state = st.session_state.human_history[-1] if len(st.session_state.human_history) > 0 else 0
+                        # 2. AI picks an action (greedy, but adapts quickly)
+                        ai_action = q_agent.select_action(state)
+                        # 3. Compute payoffs
+                        def_payoff = float(A[ai_action, j])
+                        atk_payoff = float(B[ai_action, j])
+                        # 4. Update Q-learning formulation with the new info (state transition)
+                        q_agent.update(state, ai_action, def_payoff, j)
+                        
+                        # 5. Save history
+                        st.session_state.human_score += atk_payoff
+                        st.session_state.ai_score += def_payoff
+                        st.session_state.human_history.append(j)
+                        st.session_state.ai_history.append(ai_action)
+                        st.session_state.play_logs.insert(0, {
+                            "Round": len(st.session_state.human_history),
+                            "You Played": atk_labels[j],
+                            "AI Played": def_labels[ai_action],
+                            "Your Payoff": atk_payoff,
+                            "AI Payoff": def_payoff
+                        })
+                        st.rerun()
+
+        st.markdown("---")
+        st.markdown("#### Match History")
+        if st.session_state.play_logs:
+            st.dataframe(pd.DataFrame(st.session_state.play_logs), use_container_width=True)
+            
+        # Feature showing what the AI expects next
+        if atk_classifier and atk_classifier.is_trained:
+            if len(st.session_state.human_history) >= 3:
+                st.markdown("---")
+                st.markdown("#### 🧠 Inside the AI's Brain")
+                st.caption("The Pattern Classifier is actively trying to predict your next move based on your history.")
+                last_window = st.session_state.human_history[-3:]
+                live_proba = atk_classifier.predict_proba(last_window)
+                live_pred  = atk_classifier.predict(last_window)
+                st.info(f"The AI thinks you will play **{atk_labels[live_pred]}** next!")
+                st.plotly_chart(
+                    plot_attack_proba(live_proba, atk_labels),
+                    use_container_width=True,
+                    key="arena_predict"
+                )
+            else:
+                st.markdown("---")
+                st.info("🧠 Inside the AI's Brain: Make at least 3 moves for the AI to start predicting your strategy!")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

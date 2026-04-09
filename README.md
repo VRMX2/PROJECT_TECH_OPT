@@ -6,15 +6,14 @@ An interactive simulation platform that models the attacker-defender interaction
 
 ## 🎯 Features
 
-| Feature | Details |
-|---|---|
 | **Game-Theoretic Engine** | Nash Equilibria (pure & mixed), Pareto Optimality via `nashpy` |
 | **Network Visualization** | Interactive drag-and-drop topology using `PyVis` |
-| **Repeated Simulation** | 20–500 rounds with strategy evolution plots |
-| **Q-Learning AI** | Tabular RL defender agent that learns from attacker patterns |
-| **Pattern Recognition** | `RandomForestClassifier` predicts next attacker move |
-| **LP Comparison** | `scipy.optimize.linprog` vs Nash equilibrium efficiency |
-| **CSV Export** | Download all results and configurations |
+| **Interactive Minigame**  | Play vs AI mode allowing human vs Reinforcement Learning simulation |
+| **Q-Learning AI**         | Tabular RL defender agent that learns from attacker patterns |
+| **Pattern Recognition**   | `RandomForestClassifier` predicts next attacker move |
+| **LP Comparison**         | `scipy.optimize.linprog` vs Nash equilibrium efficiency |
+| **Persistence Engine**    | Save and load custom JSON configurations & CSV export |
+| **Cyberpunk UI**          | Bespoke Glassmorphism and animated HUD components natively in Streamlit |
 
 ---
 
@@ -83,6 +82,7 @@ The app will open at `http://localhost:8501` in your browser.
 | 🤖 **AI Insights** | Q-table, learned policy, attack pattern predictions |
 | ⚖️ **Comparison** | Nash Equilibrium vs. LP Optimal payoff comparison |
 | 💾 **Export** | Download results as CSV |
+| 🎮 **Play vs AI** | Interactive Human-vs-RL hacking simulation arena |
 
 ---
 

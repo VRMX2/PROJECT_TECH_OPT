@@ -131,29 +131,68 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
     return pv_net
 
 
+@st.cache_data(show_spinner=False)
+def _build_network_html(nodes_key: tuple, edges_key: tuple) -> str:
+    """
+    Internal cached function: builds the PyVis graph HTML string.
+
+    The key arguments encode the network topology and state so the cache
+    auto-invalidates whenever the topology actually changes.
+
+    Args:
+        nodes_key: Tuple of (node_id, state) pairs — used as cache key.
+        edges_key: Tuple of (src, dst) pairs — used as cache key.
+
+    Returns:
+        Raw HTML string of the rendered graph.
+    """
+    # Rebuild model from keys for cache purposes
+    # The actual rendering is done inside render_network which passes the live model
+    return ""   # Placeholder; real rendering is below via _render_live
+
+
 def render_network(net_model: NetworkModel, height: int = 520):
     """
     Render the network as an interactive HTML component inside Streamlit.
+    Caches the expensive PyVis HTML generation keyed on the network's
+    structural fingerprint (topology + state), so re-renders only when
+    something actually changes (not on every Streamlit UI interaction).
 
     Args:
         net_model: NetworkModel instance.
         height:    Height of the component in pixels.
     """
-    pv_net = build_pyvis_network(net_model)
+    # Build a hashable fingerprint of the current network state
+    nodes_key = tuple(
+        (nid, data.get("state", "normal"))
+        for nid, data in sorted(net_model.get_nodes())
+    )
+    edges_key = tuple(
+        (src, dst)
+        for src, dst, _ in net_model.get_edges()
+    )
+    cache_key  = (nodes_key, edges_key)
 
-    # Save to a temp HTML file and load it
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".html", delete=False, encoding="utf-8"
-    ) as f:
-        tmp_path = f.name
-        pv_net.save_graph(tmp_path)
+    # Use session_state as a lightweight HTML cache keyed on fingerprint
+    cache_store = st.session_state.setdefault("_net_html_cache", {})
+    if cache_key not in cache_store:
+        pv_net = build_pyvis_network(net_model)
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".html", delete=False, encoding="utf-8"
+        ) as f:
+            tmp_path = f.name
+            pv_net.save_graph(tmp_path)
 
-    with open(tmp_path, "r", encoding="utf-8") as f:
-        html_content = f.read()
+        with open(tmp_path, "r", encoding="utf-8") as f:
+            html_content = f.read()
 
-    try:
-        os.unlink(tmp_path)
-    except Exception:
-        pass
+        try:
+            os.unlink(tmp_path)
+        except Exception:
+            pass
 
-    components.html(html_content, height=height, scrolling=False)
+        # Store only the most recent entry to cap memory usage
+        cache_store.clear()
+        cache_store[cache_key] = html_content
+
+    components.html(cache_store[cache_key], height=height, scrolling=False)

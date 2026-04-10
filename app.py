@@ -80,313 +80,209 @@ st.set_page_config(
 # ─── Custom CSS ──────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
+/* Global Reset */
 html, body, [class*="css"] {
-    font-family: 'Outfit', sans-serif;
-    color: #e2e8f0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #F8FAFC;
+    background-color: #090A0B !important;
 }
 
-/* Animations */
-@keyframes backgroundPan {
-    0% { background-position: 0% center; }
-    100% { background-position: 200% center; }
-}
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0px); }
-}
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
-    50% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); }
-    100% { box-shadow: 0 0 15px rgba(0, 243, 255, 0.1); }
-}
-
-/* Typography Overrides */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: -0.02em;
-}
-
-/* Global App Background */
+/* Global App Background Override */
 .stApp {
-    background: radial-gradient(circle at 15% 50%, #0c1222, #050711) !important;
-    background-attachment: fixed !important;
+    background: #090A0B !important;
 }
 
-/* Background Grid Overlay */
-.stApp::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 30px 30px;
-    pointer-events: none;
-    z-index: -1;
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #FFFFFF;
 }
 
-/* Premium Header styling */
+/* Header */
 .app-header {
-    background: linear-gradient(135deg, rgba(16, 23, 42, 0.8), rgba(15, 23, 42, 0.3));
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 30px 40px;
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    background: #111318;
+    border: 1px solid #272A30;
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-bottom: 32px;
 }
-
-.app-header::after {
-    content: '';
-    position: absolute;
-    top: -50%; left: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle at 30% 70%, rgba(0, 243, 255, 0.15) 0%, transparent 50%);
-    pointer-events: none;
-}
-
 .app-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    background: linear-gradient(to right, #00F3FF, #A78BFA, #00F3FF);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
     margin: 0;
-    line-height: 1.2;
-    animation: backgroundPan 5s linear infinite;
 }
-
 .app-subtitle {
-    font-size: 1.05rem;
-    color: #94a3b8;
-    margin-top: 10px;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    display: flex;
-    align-items: center;
-}
-.app-subtitle::before {
-    content: "";
-    display: block;
-    width: 24px;
-    height: 2px;
-    background: #00F3FF;
-    margin-right: 12px;
-    box-shadow: 0 0 8px #00F3FF;
+    font-size: 14px;
+    color: #94A3B8;
+    font-weight: 400;
+    margin-top: 4px;
 }
 
-/* Stunning Metric Cards */
+/* Metric Cards */
 .metric-card {
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-    padding: 24px 20px;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    background: #111318;
+    border: 1px solid #272A30;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: left;
+    transition: background 0.15s ease;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100%;
 }
-
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-    pointer-events: none;
-}
-
 .metric-card:hover { 
-    border-color: rgba(0, 243, 255, 0.4); 
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px -10px rgba(0, 243, 255, 0.2);
+    background: #16181D;
 }
-
 .metric-val { 
-    font-size: 2.2rem; 
-    font-weight: 700; 
-    color: #f8fafc; 
-    font-family: 'Space Grotesk', sans-serif;
-    background: linear-gradient(to bottom right, #ffffff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 32px; 
+    font-weight: 600; 
+    color: #FFFFFF; 
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
     margin-bottom: 4px;
+    line-height: 1.1;
 }
-
-.metric-card:hover .metric-val {
-    background: linear-gradient(to bottom right, #00F3FF, #ffffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 20px rgba(0,243,255,0.3);
-}
-
 .metric-lbl { 
-    font-size: 0.8rem; 
-    color: #8b9cd0; 
+    font-size: 12px; 
+    color: #94A3B8; 
     font-weight: 500;
     text-transform: uppercase; 
-    letter-spacing: 0.1em; 
+    letter-spacing: 0.05em; 
 }
 
-/* Refined Sidebar */
+/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: rgba(10, 15, 28, 0.8);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset -1px 0 0 rgba(0, 243, 255, 0.1);
+    background: #090A0B;
+    border-right: 1px solid #272A30;
+}
+section[data-testid="stSidebar"] .stMarkdown h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94A3B8;
+    margin-top: 16px;
+    margin-bottom: 8px;
 }
 
-/* Beautiful Inputs & Textareas */
+/* Inputs & Form Elements */
 .stTextInput>div>div>input, .stNumberInput>div>div>input, .stSelectbox>div>div>div {
-    background-color: rgba(15, 23, 42, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #fff !important;
-    border-radius: 8px !important;
-    font-family: 'Outfit', sans-serif !important;
-    transition: all 0.3s ease !important;
+    background-color: #090A0B !important;
+    border: 1px solid #272A30 !important;
+    color: #F8FAFC !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.15s ease !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
 }
-
 .stTextInput>div>div>input:focus, .stSelectbox>div>div>div:focus {
-    border-color: #00F3FF !important;
-    box-shadow: 0 0 0 2px rgba(0, 243, 255, 0.2) !important;
-    background-color: rgba(15, 23, 42, 0.8) !important;
+    border-color: #635BFF !important;
+    box-shadow: 0 0 0 2px rgba(99, 91, 255, 0.25) !important;
 }
 
-/* Professional Streamlit Tabs */
+/* Tabs */
 button[data-baseweb="tab"] {
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    color: #64748b !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #94A3B8 !important;
     background-color: transparent !important;
-    padding: 12px 24px !important;
-    border-radius: 8px 8px 0 0 !important;
-    transition: all 0.3s ease !important;
+    padding: 10px 16px !important;
+    border-radius: 0 !important;
     border: none !important;
+    border-bottom: 2px solid transparent !important;
 }
 button[data-baseweb="tab"]:hover {
-    color: #cbd5e1 !important;
-    background-color: rgba(255,255,255,0.02) !important;
+    color: #E2E8F0 !important;
 }
 button[aria-selected="true"] { 
-    color: #00F3FF !important; 
-    border-bottom: 2px solid #00F3FF !important; 
-    background: linear-gradient(to top, rgba(0, 243, 255, 0.05) 0%, transparent 100%) !important;
-    text-shadow: 0 0 15px rgba(0,243,255,0.3); 
+    color: #FFFFFF !important; 
+    border-bottom: 2px solid #FFFFFF !important; 
 }
 
-/* Styled Streamlit Buttons */
+/* Standard Buttons */
 .stButton > button {
-    background: rgba(30, 41, 59, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 8px 16px !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.05em !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    background: #111318 !important;
+    border: 1px solid #272A30 !important;
+    color: #F8FAFC !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+    transition: all 0.15s ease !important;
 }
 .stButton > button:hover {
-    background: rgba(45, 55, 72, 0.9) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1) !important;
+    background: #16181D !important;
+    border-color: #334155 !important;
 }
 .stButton > button:active { 
-    transform: translateY(0); 
+    background: #090A0B !important;
 }
 
-/* Primary Button (Neon Effect) */
+/* Primary Button (Stripe Blurple) */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-    border: none !important;
-    color: #ffffff !important;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-}
-.stButton > button[kind="primary"]::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, #00F3FF 0%, #3b82f6 100%);
-    opacity: 0;
-    z-index: -1;
-    transition: opacity 0.3s ease;
-}
-.stButton > button[kind="primary"]:hover::before {
-    opacity: 1;
+    background: #635BFF !important;
+    border: 1px solid #635BFF !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(99, 91, 255, 0.2) !important;
 }
 .stButton > button[kind="primary"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 243, 255, 0.4) !important;
+    background: #5448E5 !important;
+    border-color: #5448E5 !important;
 }
 
-/* Enhance Expanders */
+/* Expanders */
 .streamlit-expanderHeader { 
-    background: rgba(30, 41, 59, 0.4) !important; 
-    border-left: 3px solid #8b5cf6 !important;
-    border-radius: 8px !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    transition: background 0.3s ease !important;
+    background: #111318 !important; 
+    border: 1px solid #272A30 !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
 }
 .streamlit-expanderHeader:hover {
-    background: rgba(45, 55, 72, 0.6) !important;
+    background: #16181D !important;
+}
+.streamlit-expanderContent {
+    border: 1px solid #272A30;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
 }
 
-/* Beautiful Dataframes */
+/* DataFrames */
 .stDataFrame {
-    border-radius: 12px;
+    border-radius: 8px;
+    border: 1px solid #272A30;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-hr { border-color: rgba(255, 255, 255, 0.08); margin: 2rem 0; }
-code, .stCode { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.3) !important; }
-
-/* Custom Scrollbar for sleekness */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+/* Utils & Chips */
+hr { border-color: #272A30; margin: 24px 0; }
+code, .stCode { font-family: 'Fira Code', monospace; background: #16181D !important; border: 1px solid #272A30 !important; border-radius: 4px !important; }
 
 /* Status chips */
 .chip {
     display: inline-block;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
 }
-.chip-pure   { background: rgba(57,255,20,0.1); color: #39FF14; border: 1px solid rgba(57,255,20,0.4); box-shadow: 0 0 12px rgba(57,255,20,0.15); }
-.chip-mixed  { background: rgba(0,243,255,0.1); color: #00F3FF; border: 1px solid rgba(0,243,255,0.4); box-shadow: 0 0 12px rgba(0,243,255,0.15); }
-.chip-pareto { background: rgba(167,139,250,0.1); color: #A78BFA; border: 1px solid rgba(167,139,250,0.4); box-shadow: 0 0 12px rgba(167,139,250,0.15); }
+.chip-pure   { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+.chip-mixed  { background: rgba(99, 91, 255, 0.1); color: #635BFF; border: 1px solid rgba(99, 91, 255, 0.2); }
+.chip-pareto { background: rgba(56, 189, 248, 0.1); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.2); }
 
-/* Utility classes applied via markdown */
-.live-status { animation: pulseGlow 2s infinite; font-weight: bold; }
+.live-status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #10B981; margin-right: 6px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -595,15 +491,28 @@ with st.sidebar:
 # Core computation (runs when button pressed or matrices change)
 # ─────────────────────────────────────────────────────────────────────────────
 
+@st.cache_data(show_spinner=False)
+def compute_nash_cached(A: np.ndarray, B: np.ndarray):
+    game = create_game(A, B)
+    eqs = compute_nash_equilibria(game)
+    cls = classify_equilibria(eqs)
+    par = compute_pareto_optimal(A, B)
+    return eqs, cls, par
+
+@st.cache_data(show_spinner=False)
+def run_brd_cached(A: np.ndarray, B: np.ndarray, rounds: int):
+    return run_best_response_dynamics(A, B, rounds=rounds)
+
+@st.cache_data(show_spinner=False)
+def solve_lp_cached(A: np.ndarray, B: np.ndarray, nash_def_payoff, nash_atk_payoff):
+    return compare_nash_vs_lp(A, B, nash_def_payoff, nash_atk_payoff)
+
 def run_analysis(A, B, n_rounds, use_ai, use_brd, def_labels, atk_labels):
     """Run the full game-theoretic and simulation analysis pipeline."""
     n_def, n_atk = A.shape
 
     with st.spinner("⚙️ Computing Nash Equilibria…"):
-        game = create_game(A, B)
-        equilibria = compute_nash_equilibria(game)
-        classified = classify_equilibria(equilibria)
-        pareto = compute_pareto_optimal(A, B)
+        equilibria, classified, pareto = compute_nash_cached(A, B)
 
     st.session_state.equilibria     = equilibria
     st.session_state.classified_eqs = classified
@@ -626,7 +535,7 @@ def run_analysis(A, B, n_rounds, use_ai, use_brd, def_labels, atk_labels):
     # ── Best-response dynamics ─────────────────────────────────────────────
     if use_brd:
         with st.spinner("📈 Running best-response dynamics…"):
-            brd_df = run_best_response_dynamics(A, B, rounds=n_rounds)
+            brd_df = run_brd_cached(A, B, n_rounds)
         st.session_state.brd_df = brd_df
 
     # ── Attack pattern classifier ─────────────────────────────────────────
@@ -643,10 +552,11 @@ def run_analysis(A, B, n_rounds, use_ai, use_brd, def_labels, atk_labels):
     nash_def_payoff = None
     nash_atk_payoff = None
     if equilibria:
+        game = create_game(A, B)
         nash_def_payoff, nash_atk_payoff = get_payoff_at(game, *equilibria[0])
 
     with st.spinner("⚖️ Solving LP comparison…"):
-        comparison = compare_nash_vs_lp(A, B, nash_def_payoff, nash_atk_payoff)
+        comparison = solve_lp_cached(A, B, nash_def_payoff, nash_atk_payoff)
     st.session_state.comparison = comparison
 
     return classified, pareto, sim_df

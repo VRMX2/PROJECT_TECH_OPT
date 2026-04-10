@@ -39,6 +39,13 @@ NODE_SIZES = {
 }
 
 
+MINIMAL_STATE_COLORS = {
+    "normal": "#10B981",       # Muted emerald
+    "attacked": "#EF4444",     # Muted rose
+    "defended": "#38BDF8",     # Sky blue
+    "compromised": "#F59E0B",  # Amber
+}
+
 def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetwork:
     """
     Convert a NetworkModel into a PyVis network for interactive rendering.
@@ -51,7 +58,7 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
         Configured pyvis.Network object.
     """
     bg_color = "transparent" if dark else "#ffffff"
-    font_color = "#cbd5e1" if dark else "#000000"
+    font_color = "#94A3B8" if dark else "#000000"
 
     pv_net = PyvisNetwork(
         height="500px",
@@ -62,24 +69,24 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
         notebook=False,
     )
 
-    # Configure physics for an organic but stable high-tech layout
+    # Configure physics for a structured, minimal layout
     pv_net.set_options("""
     {
       "physics": {
         "enabled": true,
         "barnesHut": {
-          "gravitationalConstant": -10000,
-          "centralGravity": 0.4,
-          "springLength": 150,
-          "springConstant": 0.05,
-          "damping": 0.1
+          "gravitationalConstant": -8000,
+          "centralGravity": 0.3,
+          "springLength": 180,
+          "springConstant": 0.04,
+          "damping": 0.15
         }
       },
       "edges": {
-        "arrows": { "to": { "enabled": true, "scaleFactor": 0.6 } },
-        "color": { "color": "rgba(0, 243, 255, 0.4)", "highlight": "#00F3FF" },
-        "width": 2,
-        "smooth": { "type": "continuous", "roundness": 0.3 }
+        "arrows": { "to": { "enabled": true, "scaleFactor": 0.5 } },
+        "color": { "color": "#334155", "highlight": "#635BFF" },
+        "width": 1.5,
+        "smooth": { "type": "continuous", "roundness": 0.2 }
       },
       "interaction": {
         "hover": true,
@@ -94,28 +101,27 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
     for node_id, data in net_model.get_nodes():
         state     = data.get("state", "normal")
         ntype     = data.get("node_type", "host")
-        color     = STATE_COLORS.get(state, "#4A90D9")
+        color     = MINIMAL_STATE_COLORS.get(state, "#334155")
         shape     = NODE_SHAPES.get(ntype, "ellipse")
         size      = NODE_SIZES.get(ntype, 25)
         label     = data.get("label", node_id)
         value_str = f"Asset Value: {data.get('value', '?')}"
         tooltip   = f"{label}\nType: {ntype}\nState: {state}\n{value_str}"
 
-        # Add glow-like border when attacked/compromised
-        border_width = 3 if state in ("attacked", "compromised") else 1
-        border_color = "#FF0000" if state == "attacked" else (
-                       "#FF6600" if state == "compromised" else color)
+        # Clean borders
+        border_width = 2
+        border_color = "#1E293B"
 
         pv_net.add_node(
             node_id,
             label=label,
             title=tooltip,
             color={"background": color, "border": border_color,
-                   "highlight": {"background": color, "border": "#ffffff"}},
+                   "highlight": {"background": color, "border": "#F8FAFC"}},
             shape=shape,
             size=size,
             borderWidth=border_width,
-            font={"size": 12, "color": font_color},
+            font={"size": 12, "color": font_color, "face": "Inter"},
         )
 
     # Add edges

@@ -20,31 +20,31 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 # ─── Color palette ────────────────────────────────────────────────────────────
-DEFENDER_COLOR = "#00F3FF"   # neon cyan
-ATTACKER_COLOR = "#f43f5e"   # sleek rose/red
-ACCENT_COLOR   = "#a855f7"   # intense purple
-PARETO_COLOR   = "#22c55e"   # vivid green
+DEFENDER_COLOR = "#10B981"   # muted emerald
+ATTACKER_COLOR = "#EF4444"   # muted rose
+ACCENT_COLOR   = "#635BFF"   # stripe blurple
+PARETO_COLOR   = "#38BDF8"   # sky blue
 SURFACE_BG     = "rgba(0,0,0,0)"
 CARD_BG        = "rgba(0,0,0,0)"
-GRID_COLOR     = "rgba(255,255,255,0.04)"
-TEXT_COLOR     = "#cbd5e1"
-TITLE_COLOR    = "#f1f5f9"
+GRID_COLOR     = "rgba(255,255,255,0.03)"
+TEXT_COLOR     = "#94A3B8"
+TITLE_COLOR    = "#FFFFFF"
 
 _PLOTLY_LAYOUT = dict(
     paper_bgcolor=SURFACE_BG,
     plot_bgcolor=CARD_BG,
-    font=dict(color=TEXT_COLOR, family="'Outfit', sans-serif"),
-    title=dict(font=dict(family="'Space Grotesk', sans-serif", size=18, color=TITLE_COLOR)),
-    legend=dict(bgcolor="rgba(15,23,42,0.6)", bordercolor="rgba(255,255,255,0.1)", borderwidth=1),
+    font=dict(color=TEXT_COLOR, family="'Inter', -apple-system, sans-serif"),
+    title=dict(font=dict(family="'Inter', -apple-system, sans-serif", size=16, color=TITLE_COLOR)),
+    legend=dict(bgcolor="rgba(17,19,24,0.8)", bordercolor="rgba(39,42,48,1)", borderwidth=1),
     xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
     yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
     margin=dict(l=40, r=20, t=60, b=40),
     hovermode="x unified",
     hoverlabel=dict(
-        bgcolor="rgba(15,23,42,0.9)",
-        font_size=13,
-        font_family="'Outfit', sans-serif",
-        bordercolor="rgba(0,243,255,0.4)"
+        bgcolor="#111318",
+        font_size=12,
+        font_family="'Inter', sans-serif",
+        bordercolor="#272A30"
     )
 )
 

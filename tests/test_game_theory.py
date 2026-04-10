@@ -11,7 +11,7 @@ Tests cover:
   • get_payoff_at()            – expected payoff calculation
 """
 
-import pytest
+
 import numpy as np
 from engine.game_theory import (
     create_game,

@@ -17,7 +17,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network as PyvisNetwork
 
-from engine.network_model import NetworkModel, STATE_COLORS
+from engine.network_model import NetworkModel
 
 
 # ─────────────────────────────────────────────────────────────────────────────

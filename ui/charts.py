@@ -75,7 +75,7 @@ def plot_strategy_evolution(df: pd.DataFrame, n_def: int, n_atk: int) -> go.Figu
         fig.add_trace(go.Scatter(
             x=df["round"], y=df[col],
             name=f"Defender S{i+1}",
-            line=dict(width=2),
+            line=dict(width=2, shape='spline'),
             mode="lines",
         ), row=1, col=1)
 
@@ -85,7 +85,7 @@ def plot_strategy_evolution(df: pd.DataFrame, n_def: int, n_atk: int) -> go.Figu
         fig.add_trace(go.Scatter(
             x=df["round"], y=df[col],
             name=f"Attacker S{j+1}",
-            line=dict(width=2, dash="dot"),
+            line=dict(width=2, dash="dot", shape='spline'),
             mode="lines",
         ), row=2, col=1)
 
@@ -113,19 +113,19 @@ def plot_payoff_evolution(df: pd.DataFrame) -> go.Figure:
     fig.add_trace(go.Scatter(
         x=df["round"], y=df["cum_avg_defender"],
         name="Defender Avg Payoff",
-        line=dict(color=DEFENDER_COLOR, width=2.5),
+        line=dict(color=DEFENDER_COLOR, width=2.5, shape='spline'),
         mode="lines",
         fill="tozeroy",
-        fillcolor=f"rgba(74,144,217,0.1)",
+        fillcolor="rgba(16, 185, 129, 0.1)",
     ))
 
     fig.add_trace(go.Scatter(
         x=df["round"], y=df["cum_avg_attacker"],
         name="Attacker Avg Payoff",
-        line=dict(color=ATTACKER_COLOR, width=2.5),
+        line=dict(color=ATTACKER_COLOR, width=2.5, shape='spline'),
         mode="lines",
         fill="tozeroy",
-        fillcolor=f"rgba(231,76,60,0.1)",
+        fillcolor="rgba(239, 68, 68, 0.1)",
     ))
 
     fig.update_layout(

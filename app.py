@@ -364,11 +364,11 @@ st.markdown("""
 # ─────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown("## ⚙️ Game Configuration")
+    st.markdown("## ⚙️ Control Center")
     st.markdown("---")
 
     # ── Scenario preset & Import ──────────────────────────────────────────
-    st.markdown("### 📋 Scenario Preset")
+    st.markdown("### 📋 Scenario Template")
     
     uploaded_file = st.file_uploader("📥 Load Custom Scenario (JSON)", type=["json"])
     imported_preset = None
@@ -385,7 +385,7 @@ with st.sidebar:
         preset = imported_preset
     else:
         scenario_name = st.selectbox(
-            "Choose a scenario template",
+            "Choose a template",
             options=["Custom Builder"] + list(SCENARIO_PRESETS.keys()),
             key="scenario_select",
         )
@@ -399,7 +399,7 @@ with st.sidebar:
     st.markdown("---")
 
     # ── Strategy counts ────────────────────────────────────────────────────
-    st.markdown("### 🎲 Strategies")
+    st.markdown("### 🎲 Strategy Matrix")
 
     if use_preset:
         n_def = len(preset["def_labels"])
@@ -412,7 +412,7 @@ with st.sidebar:
         n_def = st.slider("Defender strategies", 2, 6, 2, key="n_def")
         n_atk = st.slider("Attacker strategies", 2, 6, 2, key="n_atk")
 
-        st.markdown("**Defender strategy names:**")
+        st.markdown("**Defender Labels:**")
         def_labels = []
         for i in range(n_def):
             lbl = st.text_input(
@@ -421,7 +421,7 @@ with st.sidebar:
             )
             def_labels.append(lbl or f"D{i+1}")
 
-        st.markdown("**Attacker strategy names:**")
+        st.markdown("**Attacker Labels:**")
         atk_labels = []
         for j in range(n_atk):
             lbl = st.text_input(
@@ -431,15 +431,13 @@ with st.sidebar:
             atk_labels.append(lbl or f"A{j+1}")
 
     st.markdown("---")
-
     # ── Payoff matrices ────────────────────────────────────────────────────
-    st.markdown("### 💰 Payoff Matrices")
+    st.markdown("### 💰 Payoff Values")
 
     if use_preset:
         A = preset["A"].copy()
         B = preset["B"].copy()
     else:
-        # Build or retrieve matrices with correct shape
         prev_A = st.session_state.last_A
         prev_B = st.session_state.last_B
         if (prev_A is not None and prev_A.shape == (n_def, n_atk)):
@@ -448,43 +446,39 @@ with st.sidebar:
         else:
             A_init, B_init = build_default_matrices(n_def, n_atk)
 
-        A = render_matrix_editor(
-            "Defender Payoff Matrix (A)",
-            A_init, def_labels, atk_labels, key="matrix_A"
-        )
-        B = render_matrix_editor(
-            "Attacker Payoff Matrix (B)",
-            B_init, def_labels, atk_labels, key="matrix_B"
-        )
+        try:
+            A = render_matrix_editor(
+                "Defender Payoffs",
+                A_init, def_labels, atk_labels, key="matrix_A"
+            )
+            B = render_matrix_editor(
+                "Attacker Payoffs",
+                B_init, def_labels, atk_labels, key="matrix_B"
+            )
+            # Security: Sanitize user input (prevents NaN or Infinity crashes)
+            A = np.nan_to_num(A.astype(float), nan=0.0, posinf=9999.0, neginf=-9999.0)
+            B = np.nan_to_num(B.astype(float), nan=0.0, posinf=9999.0, neginf=-9999.0)
+        except Exception:
+            st.error("Input overflow detected. Reverting grid.")
+            A, B = A_init, B_init
 
     st.session_state.last_A = A
     st.session_state.last_B = B
 
     st.markdown("---")
 
-    # ── Export Configuration ───────────────────────────────────────────────
-    st.markdown("### 💾 Export Configuration")
-    json_str = export_scenario_json(A, B, def_labels, atk_labels)
-    st.download_button(
-        label="📥 Download JSON Format",
-        data=json_str,
-        file_name="cybergame_scenario.json",
-        mime="application/json",
-        use_container_width=True
-    )
-
-    st.markdown("---")
-
     # ── Game parameters ────────────────────────────────────────────────────
-    st.markdown("### 🔬 Simulation Parameters")
-    n_rounds  = st.slider("Simulation rounds",     20, 500, 100, step=10)
-    use_ai    = st.toggle("Enable Q-Learning Defender", value=True)
-    use_brd   = st.toggle("Best-Response Dynamics",     value=True)
+    st.markdown("### 🔬 Advanced Settings")
+    n_rounds  = st.slider("Simulation rounds", 20, 1000, 100, step=10)
+    use_ai    = st.toggle("Enable Q-Learning AI", value=True)
+    use_brd   = st.toggle("Best-Response Engine", value=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    run_clicked = st.button("▶ Run Full Analysis", type="primary", use_container_width=True)
 
     st.markdown("---")
-
-    # ── Compute button ─────────────────────────────────────────────────────
-    run_clicked = st.button("▶ Run Full Analysis", type="primary", use_container_width=True)
+    json_str = export_scenario_json(A, B, def_labels, atk_labels)
+    st.download_button("📥 Export JSON", data=json_str, file_name="cybergame_scenario.json", mime="application/json", use_container_width=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -639,7 +633,7 @@ st.markdown("---")
 # Tabs
 # ─────────────────────────────────────────────────────────────────────────────
 
-TAB_ICONS = ["🌐 Network", "🎯 Game Analysis", "🔄 Simulation", "🤖 AI Insights", "⚖️ Comparison", "💾 Export", "🎮 Play vs AI", "📡 Live Telemetry"]
+TAB_ICONS = ["Network", "Strategic Analysis", "Simulation Engine", "AI Observer", "Comparison", "Export", "Arena", "Stream Telemetry"]
 tabs = st.tabs(TAB_ICONS)
 
 

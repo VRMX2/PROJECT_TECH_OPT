@@ -50,8 +50,8 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
     Returns:
         Configured pyvis.Network object.
     """
-    bg_color = "#0e1117" if dark else "#ffffff"
-    font_color = "#ffffff" if dark else "#000000"
+    bg_color = "transparent" if dark else "#ffffff"
+    font_color = "#cbd5e1" if dark else "#000000"
 
     pv_net = PyvisNetwork(
         height="500px",
@@ -62,29 +62,30 @@ def build_pyvis_network(net_model: NetworkModel, dark: bool = True) -> PyvisNetw
         notebook=False,
     )
 
-    # Configure physics for better layout
+    # Configure physics for an organic but stable high-tech layout
     pv_net.set_options("""
     {
       "physics": {
         "enabled": true,
         "barnesHut": {
-          "gravitationalConstant": -8000,
-          "centralGravity": 0.3,
-          "springLength": 120,
-          "springConstant": 0.04,
-          "damping": 0.09
+          "gravitationalConstant": -10000,
+          "centralGravity": 0.4,
+          "springLength": 150,
+          "springConstant": 0.05,
+          "damping": 0.1
         }
       },
       "edges": {
-        "arrows": { "to": { "enabled": true, "scaleFactor": 0.7 } },
-        "color": { "color": "#4A90D9", "highlight": "#74b3f5" },
-        "width": 1.5,
-        "smooth": { "type": "curvedCW", "roundness": 0.1 }
+        "arrows": { "to": { "enabled": true, "scaleFactor": 0.6 } },
+        "color": { "color": "rgba(0, 243, 255, 0.4)", "highlight": "#00F3FF" },
+        "width": 2,
+        "smooth": { "type": "continuous", "roundness": 0.3 }
       },
       "interaction": {
         "hover": true,
-        "tooltipDelay": 100,
-        "navigationButtons": true
+        "tooltipDelay": 80,
+        "zoomView": true,
+        "dragView": true
       }
     }
     """)

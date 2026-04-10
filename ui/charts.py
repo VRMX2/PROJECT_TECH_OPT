@@ -20,25 +20,33 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 # ─── Color palette ────────────────────────────────────────────────────────────
-DEFENDER_COLOR = "#00F3FF"   # cyan neon
-ATTACKER_COLOR = "#FF003C"   # red neon
-ACCENT_COLOR   = "#A78BFA"   # purple neon
-PARETO_COLOR   = "#39FF14"   # green neon
+DEFENDER_COLOR = "#00F3FF"   # neon cyan
+ATTACKER_COLOR = "#f43f5e"   # sleek rose/red
+ACCENT_COLOR   = "#a855f7"   # intense purple
+PARETO_COLOR   = "#22c55e"   # vivid green
 SURFACE_BG     = "rgba(0,0,0,0)"
 CARD_BG        = "rgba(0,0,0,0)"
-GRID_COLOR     = "rgba(255,255,255,0.06)"
-TEXT_COLOR     = "#C7D2FE"
+GRID_COLOR     = "rgba(255,255,255,0.04)"
+TEXT_COLOR     = "#cbd5e1"
+TITLE_COLOR    = "#f1f5f9"
 
 _PLOTLY_LAYOUT = dict(
     paper_bgcolor=SURFACE_BG,
     plot_bgcolor=CARD_BG,
-    font=dict(color=TEXT_COLOR, family="Inter, sans-serif"),
-    legend=dict(bgcolor="rgba(0,0,0,0)", bordercolor=GRID_COLOR),
+    font=dict(color=TEXT_COLOR, family="'Outfit', sans-serif"),
+    title=dict(font=dict(family="'Space Grotesk', sans-serif", size=18, color=TITLE_COLOR)),
+    legend=dict(bgcolor="rgba(15,23,42,0.6)", bordercolor="rgba(255,255,255,0.1)", borderwidth=1),
     xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
     yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
-    margin=dict(l=50, r=20, t=50, b=50),
+    margin=dict(l=40, r=20, t=60, b=40),
+    hovermode="x unified",
+    hoverlabel=dict(
+        bgcolor="rgba(15,23,42,0.9)",
+        font_size=13,
+        font_family="'Outfit', sans-serif",
+        bordercolor="rgba(0,243,255,0.4)"
+    )
 )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 

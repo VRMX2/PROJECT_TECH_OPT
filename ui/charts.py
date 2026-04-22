@@ -34,7 +34,7 @@ _PLOTLY_LAYOUT = dict(
     paper_bgcolor=SURFACE_BG,
     plot_bgcolor=CARD_BG,
     font=dict(color=TEXT_COLOR, family="'Inter', -apple-system, sans-serif"),
-    title=dict(font=dict(family="'Inter', -apple-system, sans-serif", size=16, color=TITLE_COLOR)),
+    title_font=dict(family="'Inter', -apple-system, sans-serif", size=16, color=TITLE_COLOR),
     legend=dict(bgcolor="rgba(17,19,24,0.8)", bordercolor="rgba(39,42,48,1)", borderwidth=1),
     xaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
     yaxis=dict(gridcolor=GRID_COLOR, zerolinecolor=GRID_COLOR, gridwidth=1),
